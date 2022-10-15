@@ -58,12 +58,10 @@
                         <div class="menu_section">
                             <h3>Inventario</h3>
                             <ul class="nav side-menu">
+                            <li><a href="{{ url('pedido/create') }}"><i class="fa fa-plus"></i> Crear Nuevo Pedido </a></li>
+                            <li><a href="{{ url('pedido') }}"><i class="fa fa-bar-chart-o"></i> Pedidos </a></li>
 
-                            <li><a href="{{ url('dashboard') }}"><i class="fa fa-bar-chart-o"></i> Dashboard </a>
-
-                                </li>
-
-
+ <!--
                                 <li><a><i class="fa fa-database"></i> Administración <span
                                             class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
@@ -73,7 +71,7 @@
 
 
 
-                                <!-- <li><a><i class="fa fa-database"></i> Catalogos <span
+                                <li><a><i class="fa fa-database"></i> Catalogos <span
                                             class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
                                         <li><a href="{{ url('equipo_unidad') }}">Equipo por unidad</a></li>

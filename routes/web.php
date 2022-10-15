@@ -19,4 +19,6 @@ Route::get('/', function () {
 });
 
 
+
+Route::post('/eliminar_producto', [PedidoController::class, 'eliminar_producto'])->name('eliminar_producto');
 Route::resource('pedido', PedidoController::class);
