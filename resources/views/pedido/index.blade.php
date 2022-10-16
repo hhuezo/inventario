@@ -1,7 +1,7 @@
 @extends ('welcome')
 @section('contenido')
-    <script src="{{ asset('vendors/sweetalert/sweetalert.min.js') }}"></script>
-    <div class="x_panel">
+<script src="{{ asset('vendors/sweetalert/sweetalert.min.js') }}"></script>
+<div class="x_panel">
     <div class="clearfix"></div>
 
     <center>
@@ -9,7 +9,7 @@
     </center>
     <script src="{{asset('vendors/sweetalert/sweetalert.min.js')}}"></script>
     <div class="x_title">
-    
+
 
         <ul class="nav navbar-right panel_toolbox">
 
@@ -39,7 +39,7 @@
                             <a href="{{ url('pedido') }}/{{ $obj->Id }}/edit" class="on-default edit-row"><i class="fa fa-pencil"></i></a>
                             &nbsp;&nbsp;
                             <a href="" data-target="#modal-delete-{{$obj->Id}}" data-toggle="modal"><i class="fa fa-trash"></i></a>
-                           
+
                         </td>
                     </tr>
                     @include('pedido.modal')
@@ -53,4 +53,4 @@
 
     </div>
 </div>
-    @endsection
+@endsection

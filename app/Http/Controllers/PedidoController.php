@@ -32,7 +32,7 @@ class PedidoController extends Controller
     {
         $pedido = new Pedido;
         $pedido->Cliente = $request->get('Cliente');
-        $pedido->FechaDespacho = $request->get('FechaDespacho');
+      //  $pedido->FechaDespacho = $request->get('FechaDespacho');
         $pedido->save();
         //  alert()->success(' correctamente');
         return Redirect::to('pedido/' . $pedido->Id . '/edit');
@@ -47,17 +47,30 @@ class PedidoController extends Controller
     {
         $productos = Producto::get();
         $detalle = DetallePedido::where('Pedido', '=', $id)->get();
-        return view('pedido.edit', ['detalle' => $detalle, 'pedido' => Pedido::findOrFail($id), 'productos' => $productos]);
+      //  $conteo = DetallePedido::where('Pedido','=',$id)->select('Cantidad')->get();
+      $conteo = 0;
+        foreach($detalle as $obj){
+            
+            $conteo = $conteo + $obj->Cantidad;
+        }
+       // dd($conteo);
+        return view('pedido.edit', ['detalle' => $detalle, 'pedido' => Pedido::findOrFail($id), 'productos' => $productos,'conteo' => $conteo]);
     }
 
     public function update(Request $request, $id)
     {
         $detalle = new DetallePedido;
-        $detalle->Producto = $request->get('Producto');
+        $detalle->Producto = $request->get('IdProducto');
         $detalle->Pedido = $id;
         $detalle->Cantidad = $request->get('Cantidad');
         $detalle->save();
         return Redirect::to('pedido/' . $id . '/edit');
+    }
+
+    public function listado_producto($id){
+        $detalle = DetallePedido::where('Pedido', '=', $id)->get();
+        return view('pedido.detalle',  ['detalle' => $detalle, 'pedido' => Pedido::findOrFail($id)]);
+
     }
 
     public function destroy($id)
@@ -72,6 +85,6 @@ class PedidoController extends Controller
 
         $detalle = DetallePedido::findOrFail($request->get('Id'));
         $detalle->delete();
-        return Redirect::to('pedido/' . $request->get('Pedido') . '/edit');
+        return Redirect::to('detalle_producto/' . $request->get('Pedido'));
     }
 }

@@ -1,184 +1,138 @@
 @extends ('welcome')
 @section('contenido')
+<script src="{{ asset('vendors/sweetalert/sweetalert.min.js') }}"></script>
+<style>
+    .circulo {
+     width: 5px;
+     height: 5px;
+     -moz-border-radius: 50%;
+     -webkit-border-radius: 50%;
+     border-radius: 50%;
+     background: red;
+     color: white;
+     padding: 9%;
+}
+</style>
 <div class="x_panel">
-
-    <script src="{{ asset('vendors/sweetalert/sweetalert.min.js') }}"></script>
-    <div class="x_title">
-        <div class="col-md-6 col-sm-6 col-xs-12">
-            <h3>Detalle de Pedido</h3>
-        </div>
-        <div class="clearfix"></div>
-    </div>
-
-
-    @if (count($errors) > 0)
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
-
-    {!!Form::model($pedido,['method'=>'PATCH','route'=>['pedido.update',$pedido->Id]])!!}
-    {{Form::token()}}
+    <div class="clearfix"></div>
     <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="form-group">
-                <label class="col-sm-3 control-label">Cliente</label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <input type="text" id="Cliente" name="Cliente" class="form-control" value="{{$pedido->clientes->Nombre}}" disabled>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-horizontal form-label-left">
+
+            <div class="x_title">
+                <h2>Productos<small></small></h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <div class="col-md-6 col-sm-6 col-xs-12" align="right">
+                        <a href="{{ route('listado_producto',$pedido->Id) }}"><button class="btn btn-info float-right"> <i class="fa fa-shopping-cart"></i></button><sup class="circulo"><strong>{{$conteo}}</strong></sup></a>
+                    </div>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            <div class="x_content">
+                <h4>{{ $pedido->clientes->Nombre }}</h4>
+                <br />
+                @foreach ($productos as $producto)
+                <div class=" col-lg-6 col-md-6 col-sm-6 col-xs-6 widget_tally_box">
+
+                    <div class="x_panel fixed_height_150">
+                        <div class="x_content">
+
+                            <h5>{{ $producto->Nombre }}</h5>
+
+                            <input type="hidden" value="{{$producto->Id}}" name="Producto">
+                            <i class="btn btn-primary fa fa-plus" onclick="modal_agregar_producto(<?php echo $producto->Id; ?>,'<?php echo $producto->Nombre; ?>')"> Agregar</i>
+
+                        </div>
+                    </div>
 
                 </div>
-                <label class="col-sm-3 control-label">&nbsp;</label>
+                @endforeach
+
             </div>
-            <br>
-            <br>
-            <div class="form-group">
-                <label class="col-sm-3 control-label">Fecha Despacho</label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <input type="date" name="FechaDespacho" id="FechaDespacho" class="form-control" autofocus="true" value="{{$pedido->FechaDespacho}}" disabled>
-                </div>
-                <label class="col-sm-3 control-label">&nbsp;</label>
-            </div>
-            <br>
-            <br>
-            <br>
         </div>
-        <div class="x_title">
-            <div class="col-md-6 col-sm-6 col-xs-12">
-                <h4>Listado de productos</h4>
-            </div>
-            <div class="clearfix"></div>
-        </div>
-
-        <div class="clearfix"></div>
-        <div class="form-group">
-            <label class="col-sm-3 control-label">Productos</label>
-            <div class="col-md-6 col-sm-6 col-xs-12">
-                <select name="Producto" id="Producto" class="form-control" select2 required>
-                    @foreach($productos as $obj)
-                    <option value="{{$obj->Id}}">{{$obj->Nombre}}</option>
-                    @endforeach
-                </select>
-            </div>
-            <label class="col-sm-3 control-label">&nbsp;</label>
-        </div>
-        <br>
-        <br>
-        <div class="form-group">
-            <label class="col-sm-3 control-label">Cantidad</label>
-            <div class="col-md-6 col-sm-6 col-xs-12">
-                <input type="number" name="Cantidad" id="Cantidad" class="form-control" autofocus="true" min="1">
-            </div>
-            <label class="col-sm-3 control-label">&nbsp;</label>
-        </div>
-        <br>
-        <br>
-        <div class="form-group" align="center">
-            <button class="btn btn-primary" type="submit"><i class="fa fa-plus"></i> Agregar </button>
-        </div>
-    </div>
-    @include('sweet::alert')
-
-    {!!Form::close()!!}
-    @if($detalle->count() > 0)
-    <div class="row">
-        <div class="x_title">
-            <div class="col-md-6 col-sm-6 col-xs-12">
-                <h4>Listado de productos agregados</h4>
-            </div>
-            <div class="clearfix"></div>
-        </div>
-
-        <div class="clearfix"></div>
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <table id="datatable" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Opciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($detalle as $obj)
-                    <tr>
-                        @if($obj->Producto)
-                        <td align="center">{{ $obj->productos->Nombre }}</td>
-                        @else
-                        <td align="center"></td>
-                        @endif
-                        <td>{{ $obj->Cantidad }}</td>
-                        <td align="center" class="on-default edit-row"> 
-                            <a href=""><i class="fa fa-pencil"></i></a> &nbsp;
-                            <i class="fa fa-trash fa-lg" onclick="modal_eliminar_producto(<?php echo $obj->Id; ?>)"></i>
-
-
-                        </td>
-                    </tr>
-
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-    </div>
-    <div class="modal fade" id="modal_eliminar_producto" tabindex="-1" role="dialog"
-            aria-labelledby="exampleModalLabel" aria-hidden="true" data-tipo="1">
+        <div class="modal fade" id="modal_agregar_producto" tabindex="-2" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-tipo="1">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <form action="{{ url('eliminar_producto') }}" method="POST">
-                        <div class="modal-header">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <h5 class="modal-title" id="exampleModalLabel">Eliminar Producto</h5>
-                            </div>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                    {!!Form::model($pedido,['method'=>'PATCH','route'=>['pedido.update',$pedido->Id]])!!}
+                    <div class="modal-header">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <h5 class="modal-title" id="exampleModalLabel">Agregar <label id="Nombre"></label></h5>
                         </div>
-                        <input type="text" id="IdProducto" name="Id">
-                        <input type="text" name="Pedido" value="{{$pedido->Id}}">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="IdProducto" name="IdProducto">
 
-                        <div class="modal-body">
-                            <div class="box-body">
-                                Desea eliminar el registro?
+
+                    <div class="modal-body">
+                        <div class="box-body">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Cantidad</label>
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <table style="width: 50%;">
+                                            <tr>
+                                                <td><i class="btn btn-success fa fa-plus" id='aumentar' onclick="aumentar()"></i></td>
+                                                <td><input type='number' id="Cantidad" name="Cantidad" class="form-control" value="1" style="width: 90%;"></td>
+                                                <td> <i class="btn btn-success fa fa-minus" id='disminuir' onclick="disminuir()"></i></td>
+                                            </tr>
+                                        </table>
+
+                                    </div>
+                                </div>
+                                <br>
+                                <br>
+                                &nbsp;
+                                <div class="clearfix"></div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">Aceptar</button>
+                                </div>
+
+                                {{ Form::token() }}
+
                             </div>
+                        </div>
 
-                            <div class="clearfix"></div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary">Aceptar</button>
-                            </div>
-
-                            {{ Form::token() }}
-
-                    </form>
+                        {!!Form::close()!!}
+                    </div>
                 </div>
             </div>
         </div>
-    @endif
-
-</div>
-
-<script src="{{ asset('vendors/jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ asset('gentella/vendors/jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ asset('vendors/jquery/dist/jquery.min.js') }}"></script>
 
 
-<script type="text/javascript">
-    function modal_eliminar_producto(id) {
-        document.getElementById('IdProducto').value = id;
+        <script type="text/javascript">
+            function modal_agregar_producto(id, nombre) {
+                document.getElementById('IdProducto').value = id,
+                    //  document.getElementById('Nombre').value = nombre,
+                    $('#Nombre').html(nombre);
+                $('#Cantidad').val(1);
 
-        $('#modal_eliminar_producto').modal('show');
-    }
+                $('#modal_agregar_producto').modal('show');
+            }
 
-</script>
+            var inicio = 0; //se inicializa una variable en 0
 
+            function aumentar() { // se crean la funcion y se agrega al evento onclick en en la etiqueta button con id aumentar
 
+                var cantidad = document.getElementById('Cantidad').value = ++inicio; //se obtiene el valor del input, y se incrementa en 1 el valor que tenga.
+            }
 
+            function disminuir() { // se crean la funcion y se agrega al evento onclick en en la etiqueta button con id disminuir
 
-
-
-
-
-@endsection
+                var cantidad = document.getElementById('Cantidad').value = --inicio; //se obtiene el valor del input, y se decrementa en 1 el valor que tenga.
+            }
+        </script>
+        @endsection
